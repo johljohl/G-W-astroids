@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d");
 // Game variables
 let asteroids = [];
 let numAsteroids = 3;
+let bullets = [];
 
 class Asteroid {
   constructor(x, y, size, speed) {
@@ -39,7 +40,8 @@ class Ship {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.speed = 0;
+    this.speedX = 0;
+    this.speedY = 0;
   }
 
   draw() {
@@ -55,13 +57,51 @@ class Ship {
   }
 
   update() {
-    this.x += this.speed;
+    this.x += this.speedX;
+    this.y += this.speedY;
 
     // Keep the ship within the canvas boundaries
     if (this.x < 10) {
       this.x = 10;
     } else if (this.x > canvas.width - 10) {
       this.x = canvas.width - 10;
+    }
+
+    if (this.y < 10) {
+      this.y = 10;
+    } else if (this.y > canvas.height - 30) {
+      this.y = canvas.height - 30;
+    }
+  }
+
+  shoot() {
+    bullets.push(new Bullet(this.x, this.y - 20));
+  }
+}
+
+class Bullet {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.speed = 5;
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.strokeStyle = "#666";
+    ctx.fillStyle = "#666";
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  update() {
+    this.y -= this.speed;
+
+    // Remove the bullet if it goes off the canvas
+    if (this.y < -10) {
+      bullets.shift();
     }
   }
 }
@@ -81,15 +121,23 @@ function initAsteroids() {
 
 function handleKeyDown(event) {
   if (event.key === "ArrowLeft") {
-    ship.speed = -3;
+    ship.speedX = -3;
   } else if (event.key === "ArrowRight") {
-    ship.speed = 3;
+    ship.speedX = 3;
+  } else if (event.key === "ArrowUp") {
+    ship.speedY = -3;
+  } else if (event.key === "ArrowDown") {
+    ship.speedY = 3;
+  } else if (event.key === " ") {
+    ship.shoot();
   }
 }
 
 function handleKeyUp(event) {
   if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-    ship.speed = 0;
+    ship.speedX = 0;
+  } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+    ship.speedY = 0;
   }
 }
 
@@ -102,6 +150,11 @@ function update() {
   for (let asteroid of asteroids) {
     asteroid.draw();
     asteroid.update();
+  }
+
+  for (let bullet of bullets) {
+    bullet.draw();
+    bullet.update();
   }
 
   ship.draw();
