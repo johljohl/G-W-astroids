@@ -1,6 +1,6 @@
 @import url("https://fonts.cdnfonts.com/css/ds-digital");
 @import url("https://fonts.cdnfonts.com/css/hiruko");
-@import url("https://fonts.cdnfonts.com/css/new-super-mario-font-u");
+@import url("https://fonts.cdnfonts.com/css/free-agent");
 
 body {
   background-color: black;
@@ -128,9 +128,22 @@ h3 {
 .shell p {
   text-align: center;
   margin: 3px;
-  font-family: "New Super Mario Font U", sans-serif;
-  color: yellow;
-  font-family: "New Super Mario Font U", sans-serif;
+  font-family: "Free Agent", sans-serif;
+  font-family: "Free Agent 3D", sans-serif;
+  font-family: "Free Agent Condensed Italic", sans-serif;
+  font-family: "Free Agent Condensed", sans-serif;
+  font-family: "Free Agent Expanded Italic", sans-serif;
+  font-family: "Free Agent Expanded", sans-serif;
+  font-family: "Free Agent Italic", sans-serif;
+  font-family: "Free Agent Leftalic", sans-serif;
+  font-family: "Free Agent Bold 3D", sans-serif;
+  font-family: "Free Agent Bold Condensed", sans-serif;
+  font-family: "Free Agent Bold Expanded", sans-serif;
+  font-family: "Free Agent Bold", sans-serif;
+  font-family: "Free Agent Bold CondItal", sans-serif;
+  font-family: "Free Agent Bold ExpItal", sans-serif;
+  font-family: "Free Agent Bold Italic", sans-serif;
+  letter-spacing: 5px;
   -webkit-text-stroke: 0.5px;
   -webkit-text-stroke-color: red;
 }

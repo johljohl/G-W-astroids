@@ -34,6 +34,13 @@ class Asteroid {
         Math.floor(Math.random() * 3) * (canvas.width / 3) + canvas.width / 6;
     }
   }
+
+  split() {
+    if (this.size > 5) {
+      asteroids.push(new Asteroid(this.x, this.y, this.size / 2, this.speed));
+      asteroids.push(new Asteroid(this.x, this.y, this.size / 2, this.speed));
+    }
+  }
 }
 
 class Ship {
@@ -144,6 +151,23 @@ function handleKeyUp(event) {
 document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
 
+function checkCollisions() {
+  for (let i = 0; i < bullets.length; i++) {
+    for (let j = 0; j < asteroids.length; j++) {
+      let dx = bullets[i].x - asteroids[j].x;
+      let dy = bullets[i].y - asteroids[j].y;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < bullets[i].speed + asteroids[j].size) {
+        bullets.splice(i, 1);
+        asteroids[j].split();
+        asteroids.splice(j, 1);
+        break;
+      }
+    }
+  }
+}
+
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -159,6 +183,8 @@ function update() {
 
   ship.draw();
   ship.update();
+
+  checkCollisions();
 
   requestAnimationFrame(update);
 }
