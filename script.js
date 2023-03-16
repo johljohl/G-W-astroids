@@ -196,10 +196,15 @@ btn2.addEventListener("mouseup", function () {
 
 // Lägg till händelsehanterare för touchmove och touchend
 btn2.addEventListener("touchstart", function (event) {
-  event.preventDefault(); // Förhindra att händelsen skickas vidare till andra element
+  // Testa om preventDefault() kan kallas på touchhändelsen
+  if (event.cancelable) {
+    event.preventDefault();
+  }
+
   if (event.target === btn2) {
     const touch = event.touches[0];
-    if (touch.clientX < btn2.offsetLeft + btn2.offsetWidth / 2) {
+    const rect = btn2.getBoundingClientRect();
+    if (touch.clientX < rect.left + rect.width / 2) {
       // Flytta åt vänster
       ship.speedX = -3;
     } else {
@@ -207,7 +212,7 @@ btn2.addEventListener("touchstart", function (event) {
       ship.speedX = 3;
     }
 
-    if (touch.clientY < btn2.offsetTop + btn2.offsetHeight / 2) {
+    if (touch.clientY < rect.top + rect.height / 2) {
       // Flytta uppåt
       ship.speedY = -3;
     } else {
@@ -218,10 +223,10 @@ btn2.addEventListener("touchstart", function (event) {
 });
 
 btn2.addEventListener("touchmove", function (event) {
-  event.preventDefault(); // Förhindra att händelsen skickas vidare till andra element
   if (event.target === btn2) {
     const touch = event.touches[0];
-    if (touch.clientX < btn2.offsetLeft + btn2.offsetWidth / 2) {
+    const rect = btn2.getBoundingClientRect();
+    if (touch.clientX < rect.left + rect.width / 2) {
       // Flytta åt vänster
       ship.speedX = -3;
     } else {
@@ -229,7 +234,7 @@ btn2.addEventListener("touchmove", function (event) {
       ship.speedX = 3;
     }
 
-    if (touch.clientY < btn2.offsetTop + btn2.offsetHeight / 2) {
+    if (touch.clientY < rect.top + rect.height / 2) {
       // Flytta uppåt
       ship.speedY = -3;
     } else {
