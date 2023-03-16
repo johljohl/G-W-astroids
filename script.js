@@ -5,6 +5,7 @@ const ctx = canvas.getContext("2d");
 let asteroids = [];
 let numAsteroids = 3;
 let bullets = [];
+let score = 0;
 
 class Asteroid {
   constructor(x, y, size, speedX, speedY) {
@@ -188,6 +189,7 @@ function checkCollisions() {
         bullets.splice(i, 1);
         asteroids[j].split();
         asteroids.splice(j, 1);
+        score += 10; // Öka poängen med 10 poäng för varje träffad astroid
         break;
       }
     }
@@ -211,6 +213,10 @@ function update() {
   ship.update();
 
   checkCollisions();
+
+  ctx.fillStyle = "black"; // Vit textfärg
+  ctx.font = " 20px DS-Digital, sans-serif"; // Använd Arial typsnitt med en fet stil
+  ctx.fillText(`Score: ${score}`, 20, 40); // Rita texten på x-koordinaten 20 och y-koordinaten 40
 
   requestAnimationFrame(update);
 }
