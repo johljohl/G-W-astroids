@@ -7,11 +7,12 @@ let numAsteroids = 3;
 let bullets = [];
 
 class Asteroid {
-  constructor(x, y, size, speed) {
+  constructor(x, y, size, speedX, speedY) {
     this.x = x;
     this.y = y;
     this.size = size;
-    this.speed = speed;
+    this.speedX = speedX;
+    this.speedY = speedY;
   }
 
   draw() {
@@ -25,21 +26,33 @@ class Asteroid {
   }
 
   update() {
-    this.y += this.speed;
+    this.x += this.speedX;
+    this.y += this.speedY;
 
-    // If the asteroid goes off the canvas, reset its position
+    // If the asteroid goes off the canvas, reset its position and change its direction
     if (this.y > canvas.height + this.size) {
       this.y = -this.size;
       this.x =
         Math.floor(Math.random() * 3) * (canvas.width / 3) + canvas.width / 6;
+      this.speedX = Math.random() * 2 - 1; // Slumpa en hastighet i x-led mellan -1 och 1
+      this.speedY = Math.random() * 2 + 1; // Slumpa en hastighet i y-led mellan 1 och 3
     }
   }
 
   split() {
     if (this.size > 5) {
-      asteroids.push(new Asteroid(this.x, this.y, this.size / 2, this.speed));
-      asteroids.push(new Asteroid(this.x, this.y, this.size / 2, this.speed));
+      asteroids.push(
+        new Asteroid(this.x, this.y, this.size / 2, this.speedX, this.speedY)
+      );
+      asteroids.push(
+        new Asteroid(this.x, this.y, this.size / 2, this.speedX, this.speedY)
+      );
     }
+  }
+
+  changeDirection(newSpeedX, newSpeedY) {
+    this.speedX = newSpeedX;
+    this.speedY = newSpeedY;
   }
 }
 
@@ -96,6 +109,7 @@ class Bullet {
   draw() {
     ctx.beginPath();
     ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+
     ctx.closePath();
     ctx.strokeStyle = "#666";
     ctx.fillStyle = "#666";
@@ -121,8 +135,9 @@ function initAsteroids() {
       Math.floor(Math.random() * 3) * (canvas.width / 3) + canvas.width / 6;
     let y = Math.random() * canvas.height;
     let size = 10;
-    let speed = 1;
-    asteroids.push(new Asteroid(x, y, size, speed));
+    let speedX = Math.random() * 2 - 1; // Slumpa en hastighet i x-led mellan -1 och 1
+    let speedY = Math.random() * 2 + 1; // Slumpa en hastighet i y-led mellan 1 och 3
+    asteroids.push(new Asteroid(x, y, size, speedX, speedY));
   }
 }
 
@@ -148,8 +163,19 @@ function handleKeyUp(event) {
   }
 }
 
+function handleKeyPress(event) {
+  if (event.key === "d") {
+    // Tryck på "d" för att svänga höger
+    asteroids[0].changeDirection(2, 1);
+  } else if (event.key === "a") {
+    // Tryck på "a" för att svänga vänster
+    asteroids[0].changeDirection(-2, 1);
+  }
+}
+
 document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
+document.addEventListener("keypress", handleKeyPress);
 
 function checkCollisions() {
   for (let i = 0; i < bullets.length; i++) {
