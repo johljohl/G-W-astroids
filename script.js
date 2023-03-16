@@ -194,6 +194,7 @@ btn2.addEventListener("mouseup", function () {
   ship.speedY = 0;
 });
 
+// Lägg till händelsehanterare för touchmove och touchend
 btn2.addEventListener("touchstart", function (event) {
   event.preventDefault(); // Förhindra att händelsen skickas vidare till andra element
   if (event.target === btn2) {
@@ -214,6 +215,33 @@ btn2.addEventListener("touchstart", function (event) {
       ship.speedY = 3;
     }
   }
+});
+
+btn2.addEventListener("touchmove", function (event) {
+  event.preventDefault(); // Förhindra att händelsen skickas vidare till andra element
+  if (event.target === btn2) {
+    const touch = event.touches[0];
+    if (touch.clientX < btn2.offsetLeft + btn2.offsetWidth / 2) {
+      // Flytta åt vänster
+      ship.speedX = -3;
+    } else {
+      // Flytta åt höger
+      ship.speedX = 3;
+    }
+
+    if (touch.clientY < btn2.offsetTop + btn2.offsetHeight / 2) {
+      // Flytta uppåt
+      ship.speedY = -3;
+    } else {
+      // Flytta nedåt
+      ship.speedY = 3;
+    }
+  }
+});
+
+btn2.addEventListener("touchend", function () {
+  ship.speedX = 0;
+  ship.speedY = 0;
 });
 
 function checkCollisions() {
