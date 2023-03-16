@@ -64,14 +64,50 @@ h3 {
   border: 4px solid whitesmoke;
 }
 .btn2 {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   background-color: red;
 
   border-radius: 50%;
   position: absolute;
-  top: 210px;
-  left: 385px;
+  top: 230px;
+  left: 392px;
+
+  border: 4px solid whitesmoke;
+}
+.btn3 {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+
+  border-radius: 50%;
+  position: absolute;
+  top: 175px;
+  left: 392px;
+
+  border: 4px solid whitesmoke;
+}
+.btn4 {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+
+  border-radius: 50%;
+  position: absolute;
+  top: 203px;
+  left: 367px;
+
+  border: 4px solid whitesmoke;
+}
+.btn5 {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+
+  border-radius: 50%;
+  position: absolute;
+  top: 203px;
+  left: 418px;
 
   border: 4px solid whitesmoke;
 }
