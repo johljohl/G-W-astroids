@@ -1,5 +1,8 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const restartBtn = document.getElementById("restart-btn");
+const btn1 = document.getElementById("btn1");
+const btn2 = document.getElementById("btn2");
 
 // Game variables
 let asteroids = [];
@@ -178,6 +181,41 @@ document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
 document.addEventListener("keypress", handleKeyPress);
 
+btn1.addEventListener("click", function () {
+  ship.shoot();
+});
+
+btn1.addEventListener("touchstart", function () {
+  ship.shoot();
+});
+
+btn2.addEventListener("mouseup", function () {
+  ship.speedX = 0;
+  ship.speedY = 0;
+});
+
+btn2.addEventListener("touchstart", function (event) {
+  event.preventDefault(); // Förhindra att händelsen skickas vidare till andra element
+  if (event.target === btn2) {
+    const touch = event.touches[0];
+    if (touch.clientX < btn2.offsetLeft + btn2.offsetWidth / 2) {
+      // Flytta åt vänster
+      ship.speedX = -3;
+    } else {
+      // Flytta åt höger
+      ship.speedX = 3;
+    }
+
+    if (touch.clientY < btn2.offsetTop + btn2.offsetHeight / 2) {
+      // Flytta uppåt
+      ship.speedY = -3;
+    } else {
+      // Flytta nedåt
+      ship.speedY = 3;
+    }
+  }
+});
+
 function checkCollisions() {
   for (let i = 0; i < bullets.length; i++) {
     for (let j = 0; j < asteroids.length; j++) {
@@ -220,6 +258,9 @@ function update() {
 
   requestAnimationFrame(update);
 }
+restartBtn.addEventListener("click", function () {
+  location.reload();
+});
 
 initAsteroids();
 update();
