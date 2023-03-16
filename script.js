@@ -9,7 +9,8 @@ let asteroids = [];
 let numAsteroids = 3;
 let bullets = [];
 let score = 0;
-
+let lives = 3;
+const shipSize = 20; // Define the ship size here
 class Asteroid {
   constructor(x, y, size, speedX, speedY) {
     this.x = x;
@@ -250,6 +251,7 @@ btn2.addEventListener("touchend", function () {
 });
 
 function checkCollisions() {
+  // Check collisions between bullets and asteroids
   for (let i = 0; i < bullets.length; i++) {
     for (let j = 0; j < asteroids.length; j++) {
       let dx = bullets[i].x - asteroids[j].x;
@@ -260,9 +262,22 @@ function checkCollisions() {
         bullets.splice(i, 1);
         asteroids[j].split();
         asteroids.splice(j, 1);
-        score += 10; // Öka poängen med 10 poäng för varje träffad astroid
+        score += 10; // Increase score when an asteroid is destroyed
         break;
       }
+    }
+  }
+
+  // Check collisions between ship and asteroids
+  for (let j = 0; j < asteroids.length; j++) {
+    let dx = ship.x - asteroids[j].x;
+    let dy = ship.y - asteroids[j].y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < shipSize + asteroids[j].size) {
+      lives--; // Decrease lives when ship collides with an asteroid
+      asteroids.splice(j, 1);
+      break;
     }
   }
 }
@@ -285,15 +300,25 @@ function update() {
 
   checkCollisions();
 
-  ctx.fillStyle = "black"; // Vit textfärg
-  ctx.font = " 20px DS-Digital, sans-serif"; // Använd Arial typsnitt med en fet stil
-  ctx.fillText(`Score: ${score}`, 20, 40); // Rita texten på x-koordinaten 20 och y-koordinaten 40
+  // Draw score and lives on the canvas
+  ctx.font = "16px DS-Digital, sans-serif";
+  ctx.fillStyle = "black";
+  ctx.fillText(`Lives: ${lives}`, 10, 20);
+  ctx.fillText(`Score: ${score}`, canvas.width - 80, 20);
+
+  if (lives <= 0) {
+    // Stop the game if lives are zero
+    ctx.font = "40px DS-Digital, sans-serif";
+    ctx.fillStyle = "black";
+    ctx.fillText("Game Over", canvas.width / 2 - 86, canvas.height / 2);
+    return;
+  }
 
   requestAnimationFrame(update);
 }
+
 restartBtn.addEventListener("click", function () {
   location.reload();
 });
-
 initAsteroids();
 update();
