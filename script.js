@@ -11,6 +11,7 @@ let bullets = [];
 let score = 0;
 let lives = 3;
 const shipSize = 20; // Define the ship size here
+
 class Asteroid {
   constructor(x, y, size, speedX, speedY) {
     this.x = x;
@@ -103,7 +104,6 @@ class Ship {
     bullets.push(new Bullet(this.x, this.y - 20));
   }
 }
-
 class Bullet {
   constructor(x, y) {
     this.x = x;
@@ -147,6 +147,7 @@ function initAsteroids() {
 }
 
 function handleKeyDown(event) {
+  event.preventDefault();
   if (event.key === "ArrowLeft") {
     ship.speedX = -3;
   } else if (event.key === "ArrowRight") {
@@ -159,7 +160,8 @@ function handleKeyDown(event) {
     ship.shoot();
   }
 }
-
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
 function handleKeyUp(event) {
   if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
     ship.speedX = 0;
@@ -167,20 +169,6 @@ function handleKeyUp(event) {
     ship.speedY = 0;
   }
 }
-
-function handleKeyPress(event) {
-  if (event.key === "d") {
-    // Tryck på "d" för att svänga höger
-    asteroids[0].changeDirection(2, 1);
-  } else if (event.key === "a") {
-    // Tryck på "a" för att svänga vänster
-    asteroids[0].changeDirection(-2, 1);
-  }
-}
-
-document.addEventListener("keydown", handleKeyDown);
-document.addEventListener("keyup", handleKeyUp);
-document.addEventListener("keypress", handleKeyPress);
 
 btn1.addEventListener("click", function () {
   ship.shoot();
@@ -244,7 +232,6 @@ btn2.addEventListener("touchmove", function (event) {
     }
   }
 });
-
 btn2.addEventListener("touchend", function () {
   ship.speedX = 0;
   ship.speedY = 0;
@@ -319,11 +306,13 @@ function update() {
     numAsteroids++;
     initAsteroids();
   }
+
   requestAnimationFrame(update);
 }
 
 restartBtn.addEventListener("click", function () {
   location.reload();
 });
+
 initAsteroids();
 update();
