@@ -314,6 +314,11 @@ function update() {
     return;
   }
 
+  if (asteroids.length === 0) {
+    // Om det inte finns några asteroider, skapa nya och fortsätt spelet
+    numAsteroids++;
+    initAsteroids();
+  }
   requestAnimationFrame(update);
 }
 

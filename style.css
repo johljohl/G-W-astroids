@@ -225,3 +225,10 @@ h3 {
 .hidden {
   display: none;
 }
+.btn4,
+.btn5 {
+  z-index: 9999;
+}
+.game-over {
+  pointer-events: none;
+}
