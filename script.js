@@ -270,51 +270,30 @@ btn2.addEventListener("mouseup", function () {
   ship.speedX = 0;
   ship.speedY = 0;
 });
-
-btn2.addEventListener("touchstart", function (event) {
-  if (event.cancelable) {
-    event.preventDefault();
-  }
-
-  if (event.target === btn2) {
-    const touch = event.touches[0];
-    const rect = btn2.getBoundingClientRect();
-    if (touch.clientX < rect.left + rect.width / 2) {
-      ship.speedX = -3;
-    } else {
-      ship.speedX = 3;
-    }
-
-    if (touch.clientY < rect.top + rect.height / 2) {
-      ship.speedY = -3;
-    } else {
-      ship.speedY = 3;
-    }
-  }
-});
-
 btn2.addEventListener("touchmove", function (event) {
-  if (event.target === btn2) {
-    const touch = event.touches[0];
-    const rect = btn2.getBoundingClientRect();
-    if (touch.clientX < rect.left + rect.width / 2) {
-      ship.speedX = -3;
-    } else {
-      ship.speedX = 3;
-    }
-
-    if (touch.clientY < rect.top + rect.height / 2) {
-      ship.speedY = -3;
-    } else {
-      ship.speedY = 3;
-    }
-  }
+  handleTouch(event.touches[0]);
 });
 
 btn2.addEventListener("touchend", function () {
   ship.speedX = 0;
   ship.speedY = 0;
+  btn2.style.backgroundColor = ""; // Återställ knappens färg
 });
+
+function handleTouch(touch) {
+  const rect = btn2.getBoundingClientRect();
+  if (touch.clientX < rect.left + rect.width / 2) {
+    ship.speedX = -3;
+  } else {
+    ship.speedX = 3;
+  }
+
+  if (touch.clientY < rect.top + rect.height / 2) {
+    ship.speedY = -3;
+  } else {
+    ship.speedY = 3;
+  }
+}
 
 restartBtn.addEventListener("click", function () {
   location.reload();
