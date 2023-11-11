@@ -10,6 +10,8 @@ let numAsteroids = 3;
 let bullets = [];
 let score = 0;
 let lives = 3;
+let shipHit = false;
+
 const shipSize = 20;
 
 class Asteroid {
@@ -72,15 +74,44 @@ class Asteroid {
 
   split() {
     if (this.size > 5) {
+      let speedX1 = this.speedX + Math.random() - 0.5;
+      let speedY1 = this.speedY + Math.random() - 0.5;
+      let speedX2 = this.speedX + Math.random() - 0.5;
+      let speedY2 = this.speedY + Math.random() - 0.5;
       asteroids.push(
-        new Asteroid(this.x, this.y, this.size / 2, this.speedX, this.speedY)
+        new Asteroid(this.x, this.y, this.size / 2, speedX1, speedY1)
       );
       asteroids.push(
-        new Asteroid(this.x, this.y, this.size / 2, this.speedX, this.speedY)
+        new Asteroid(this.x, this.y, this.size / 2, speedX2, speedY2)
       );
     }
   }
 }
+class ShipPiece {
+  constructor(x, y, speedX, speedY, rotationSpeed) {
+    this.x = x;
+    this.y = y;
+    this.speedX = speedX;
+    this.speedY = speedY;
+    this.rotationSpeed = rotationSpeed;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.rotationSpeed += Math.random() - 0.5;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotationSpeed);
+    ctx.fillRect(-2, -2, 4, 4);
+    ctx.restore();
+  }
+}
+
+let shipPieces = [];
 
 class Ship {
   constructor(x, y) {
@@ -96,8 +127,8 @@ class Ship {
     ctx.lineTo(this.x - 10, this.y + 20);
     ctx.lineTo(this.x + 10, this.y + 20);
     ctx.closePath();
-    ctx.strokeStyle = "#666";
-    ctx.fillStyle = "#666";
+    ctx.strokeStyle = shipHit ? "red" : "#666";
+    ctx.fillStyle = shipHit ? "red" : "#666";
     ctx.fill();
     ctx.stroke();
   }
@@ -106,21 +137,32 @@ class Ship {
     this.x += this.speedX;
     this.y += this.speedY;
 
-    if (this.x < 10) {
-      this.x = 10;
-    } else if (this.x > canvas.width - 10) {
-      this.x = canvas.width - 10;
+    if (this.x < shipSize) {
+      this.x = shipSize;
+    } else if (this.x > canvas.width - shipSize) {
+      this.x = canvas.width - shipSize;
     }
 
-    if (this.y < 10) {
-      this.y = 10;
-    } else if (this.y > canvas.height - 30) {
-      this.y = canvas.height - 30;
+    if (this.y < shipSize) {
+      this.y = shipSize;
+    } else if (this.y > canvas.height - shipSize) {
+      this.y = canvas.height - shipSize;
     }
   }
 
   shoot() {
     bullets.push(new Bullet(this.x, this.y - 20));
+  }
+
+  split() {
+    for (let i = 0; i < 10; i++) {
+      let speedX = (Math.random() - 0.5) * 6;
+      let speedY = (Math.random() - 0.5) * 6;
+      let rotationSpeed = (Math.random() - 0.5) * 0.2;
+      shipPieces.push(
+        new ShipPiece(this.x, this.y, speedX, speedY, rotationSpeed)
+      );
+    }
   }
 }
 
@@ -188,8 +230,8 @@ function handleKeyUp(event) {
 }
 
 function checkCollisions() {
-  for (let i = 0; i < bullets.length; i++) {
-    for (let j = 0; j < asteroids.length; j++) {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    for (let j = asteroids.length - 1; j >= 0; j--) {
       let dx = bullets[i].x - asteroids[j].x;
       let dy = bullets[i].y - asteroids[j].y;
       let distance = Math.sqrt(dx * dx + dy * dy);
@@ -204,14 +246,20 @@ function checkCollisions() {
     }
   }
 
-  for (let j = 0; j < asteroids.length; j++) {
+  for (let j = asteroids.length - 1; j >= 0; j--) {
     let dx = ship.x - asteroids[j].x;
     let dy = ship.y - asteroids[j].y;
     let distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance < shipSize + asteroids[j].size) {
       lives--;
+      shipHit = true;
+      setTimeout(() => (shipHit = false), 1000);
+      ship.split();
       asteroids.splice(j, 1);
+      if (lives <= 0) {
+        // Additional logic to handle game over
+      }
       break;
     }
   }
@@ -220,39 +268,93 @@ function checkCollisions() {
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (let asteroid of asteroids) {
-    asteroid.draw();
+  // Update and draw asteroids
+  asteroids.forEach((asteroid, index) => {
     asteroid.update();
-  }
+    asteroid.draw();
+    // Handle off-screen asteroids
+    if (asteroidIsGone(asteroid)) {
+      asteroids.splice(index, 1);
+    }
+  });
 
-  for (let bullet of bullets) {
-    bullet.draw();
+  // Update and draw bullets
+  bullets.forEach((bullet, index) => {
     bullet.update();
+    bullet.draw();
+    // Remove bullets that have gone off-screen
+    if (bullet.y < 0) {
+      bullets.splice(index, 1);
+    }
+  });
+
+  // Update and draw ship pieces
+  shipPieces.forEach((piece, index) => {
+    piece.update();
+    piece.draw();
+    // Remove the piece after some condition, e.g., off-screen
+    if (pieceIsGone(piece)) {
+      shipPieces.splice(index, 1);
+    }
+  });
+
+  // If the ship is not hit, draw and update ship
+  if (!shipHit) {
+    ship.update();
+    ship.draw();
   }
 
-  ship.draw();
-  ship.update();
-
+  // Check for collisions (bullets with asteroids, ship with asteroids)
   checkCollisions();
 
-  ctx.font = "16px DS-Digital"; // Ändrat från "DS-Digital" till "Arial"
+  // Draw score and lives
+  ctx.font = "16px DS-Digital";
   ctx.fillStyle = "black";
-  ctx.fillText(`Lives: ${lives}`, 10, 20);
-  ctx.fillText(`Score: ${score}`, canvas.width - 80, 20);
+  ctx.fillText(`Score: ${score}`, 8, 20);
+  ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
 
+  // If no lives left, end the game
   if (lives <= 0) {
-    ctx.font = "40px DS-Digital"; // Ändrat från "DS-Digital" till "Arial"
-    ctx.fillStyle = "black";
-    ctx.fillText("Game Over", canvas.width / 2 - 86, canvas.height / 2);
-    return;
+    gameOver();
+    return; // Stop the game loop
   }
 
+  // If all asteroids are destroyed, create new ones
   if (asteroids.length === 0) {
     numAsteroids++;
     initAsteroids();
   }
 
+  // Continue the game loop
   requestAnimationFrame(update);
+}
+
+function asteroidIsGone(asteroid) {
+  // Returns true if the asteroid is off-screen
+  return (
+    asteroid.x < -asteroid.size ||
+    asteroid.x > canvas.width + asteroid.size ||
+    asteroid.y < -asteroid.size ||
+    asteroid.y > canvas.height + asteroid.size
+  );
+}
+
+function pieceIsGone(piece) {
+  // Returns true if the ship piece is off-screen (for example)
+  return (
+    piece.x < -5 ||
+    piece.x > canvas.width + 5 ||
+    piece.y < -5 ||
+    piece.y > canvas.height + 5
+  );
+}
+
+function gameOver() {
+  ctx.font = "40px DS-Digital";
+  ctx.fillStyle = "black";
+  ctx.textAlign = "center";
+  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+  // Additional game over logic, if any
 }
 
 document.addEventListener("keydown", handleKeyDown);
